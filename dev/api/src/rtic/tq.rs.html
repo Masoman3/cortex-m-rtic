@@ -166,26 +166,69 @@
 <span id="163">163</span>
 <span id="164">164</span>
 <span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">linked_list</span>::{<span class="ident">ArrayLength</span>, <span class="ident">LinkedList</span>, <span class="ident">Min</span>, <span class="ident">Node</span>},
     <span class="ident">time</span>::{<span class="ident">Clock</span>, <span class="ident">Instant</span>},
     <span class="ident">Monotonic</span>,
 };
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
-<span class="kw">use</span> <span class="ident">heapless</span>::{<span class="ident">binary_heap</span>::<span class="ident">Min</span>, <span class="ident">ArrayLength</span>, <span class="ident">BinaryHeap</span>};
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TimerQueue</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span>, <span class="ident">N</span><span class="op">&gt;</span>(<span class="kw">pub</span> <span class="ident">BinaryHeap</span><span class="op">&lt;</span><span class="ident">NotReady</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span><span class="op">&gt;</span>, <span class="ident">N</span>, <span class="ident">Min</span><span class="op">&gt;</span>)
+<span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
+<span class="kw">fn</span> <span class="ident">unwrapper</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">val</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=</span> <span class="ident">val</span> {
+        <span class="ident">v</span>
+    } <span class="kw">else</span> {
+        <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;Your monotonic is not infallible&quot;</span>)
+    }
+}
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TimerQueue</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span>, <span class="ident">N</span><span class="op">&gt;</span>(<span class="kw">pub</span> <span class="ident">LinkedList</span><span class="op">&lt;</span><span class="ident">NotReady</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span><span class="op">&gt;</span>, <span class="ident">Min</span>, <span class="ident">N</span><span class="op">&gt;</span>)
 <span class="kw">where</span>
     <span class="ident">Mono</span>: <span class="ident">Monotonic</span>,
-    <span class="ident">N</span>: <span class="ident">ArrayLength</span><span class="op">&lt;</span><span class="ident">NotReady</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">ArrayLength</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&lt;</span><span class="ident">NotReady</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">Task</span>: <span class="ident">Copy</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span>, <span class="ident">N</span><span class="op">&gt;</span> <span class="ident">TimerQueue</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span>, <span class="ident">N</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">Mono</span>: <span class="ident">Monotonic</span>,
-    <span class="ident">N</span>: <span class="ident">ArrayLength</span><span class="op">&lt;</span><span class="ident">NotReady</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">N</span>: <span class="ident">ArrayLength</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&lt;</span><span class="ident">NotReady</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">Task</span>: <span class="ident">Copy</span>,
 {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">TimerQueue</span>(<span class="ident">LinkedList</span>::<span class="ident">new</span>())
+    }
+
     <span class="doccomment">/// # Safety</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writing to memory with a transmute in order to enable</span>
@@ -203,26 +246,20 @@
         <span class="ident">F1</span>: <span class="ident">FnOnce</span>(),
         <span class="ident">F2</span>: <span class="ident">FnOnce</span>(),
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is_empty</span> <span class="op">=</span> <span class="bool-val">true</span>;
         <span class="comment">// Check if the top contains a non-empty element and if that element is</span>
         <span class="comment">// greater than nr</span>
         <span class="kw">let</span> <span class="ident">if_heap_max_greater_than_nr</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="number">0</span>
             .<span class="ident">peek</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">head</span><span class="op">|</span> {
-                <span class="ident">is_empty</span> <span class="op">=</span> <span class="bool-val">false</span>;
-                <span class="ident">nr</span>.<span class="ident">instant</span> <span class="op">&lt;</span> <span class="ident">head</span>.<span class="ident">instant</span>
-            })
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">head</span><span class="op">|</span> <span class="ident">nr</span>.<span class="ident">instant</span> <span class="op">&lt;</span> <span class="ident">head</span>.<span class="ident">instant</span>)
             .<span class="ident">unwrap_or</span>(<span class="bool-val">true</span>);
+
         <span class="kw">if</span> <span class="ident">if_heap_max_greater_than_nr</span> {
-            <span class="kw">if</span> <span class="ident">Mono</span>::<span class="ident">DISABLE_INTERRUPT_ON_EMPTY_QUEUE</span> <span class="op">&amp;&amp;</span> <span class="ident">is_empty</span> {
-                <span class="comment">// mem::transmute::&lt;_, SYST&gt;(()).enable_interrupt();A</span>
+            <span class="kw">if</span> <span class="ident">Mono</span>::<span class="ident">DISABLE_INTERRUPT_ON_EMPTY_QUEUE</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_empty</span>() {
                 <span class="ident">mono</span>.<span class="ident">enable_timer</span>();
                 <span class="ident">enable_interrupt</span>();
             }
 
-            <span class="comment">// Set SysTick pending</span>
-            <span class="comment">// SCB::set_pendst();</span>
             <span class="ident">pend_handler</span>();
         }
 
@@ -235,17 +272,39 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_empty</span>()
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">unwrapper</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">val</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">v</span>) <span class="op">=</span> <span class="ident">val</span> {
-            <span class="ident">v</span>
+    <span class="doccomment">/// Cancel the marker value</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cancel_marker</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">marker</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Task</span>, <span class="ident">u8</span>)<span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">val</span>) <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">find_mut</span>(<span class="op">|</span><span class="ident">nr</span><span class="op">|</span> <span class="ident">nr</span>.<span class="ident">marker</span> <span class="op">=</span><span class="op">=</span> <span class="ident">marker</span>) {
+            <span class="kw">let</span> <span class="ident">nr</span> <span class="op">=</span> <span class="ident">val</span>.<span class="ident">pop</span>();
+
+            <span class="prelude-val">Some</span>((<span class="ident">nr</span>.<span class="ident">task</span>, <span class="ident">nr</span>.<span class="ident">index</span>))
         } <span class="kw">else</span> {
-            <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;Your monotonic is not infallible&quot;</span>)
+            <span class="prelude-val">None</span>
+        }
+    }
+
+    <span class="doccomment">/// Update the instant at an marker value to a new instant</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_marker</span><span class="op">&lt;</span><span class="ident">F</span>: <span class="ident">FnOnce</span>()<span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">marker</span>: <span class="ident">u32</span>,
+        <span class="ident">new_marker</span>: <span class="ident">u32</span>,
+        <span class="ident">instant</span>: <span class="ident">Instant</span><span class="op">&lt;</span><span class="ident">Mono</span><span class="op">&gt;</span>,
+        <span class="ident">pend_handler</span>: <span class="ident">F</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">val</span>) <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">find_mut</span>(<span class="op">|</span><span class="ident">nr</span><span class="op">|</span> <span class="ident">nr</span>.<span class="ident">marker</span> <span class="op">=</span><span class="op">=</span> <span class="ident">marker</span>) {
+            <span class="ident">val</span>.<span class="ident">instant</span> <span class="op">=</span> <span class="ident">instant</span>;
+            <span class="ident">val</span>.<span class="ident">marker</span> <span class="op">=</span> <span class="ident">new_marker</span>;
+
+            <span class="comment">// On update pend the handler to reconfigure the next compare match</span>
+            <span class="ident">pend_handler</span>();
+
+            <span class="prelude-val">Ok</span>(())
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(())
         }
     }
 
     <span class="doccomment">/// Dequeue a task from the TimerQueue</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dequeue</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">disable_interrupt</span>: <span class="ident">F</span>, <span class="ident">mono</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Mono</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Task</span>, <span class="ident">u8</span>)<span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnOnce</span>(),
@@ -253,7 +312,7 @@
         <span class="ident">mono</span>.<span class="ident">clear_compare_flag</span>();
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">instant</span>) <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">peek</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">instant</span>) {
-            <span class="kw">if</span> <span class="ident">instant</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">Self</span>::<span class="ident">unwrapper</span>(<span class="ident">Clock</span>::<span class="ident">try_now</span>(<span class="ident">mono</span>)) {
+            <span class="kw">if</span> <span class="ident">instant</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">unwrapper</span>(<span class="ident">Clock</span>::<span class="ident">try_now</span>(<span class="ident">mono</span>)) {
                 <span class="comment">// task became ready</span>
                 <span class="kw">let</span> <span class="ident">nr</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">pop_unchecked</span>() };
 
@@ -266,7 +325,7 @@
                 <span class="comment">// dequeue. If the monotonic is fast enough it can happen that from the</span>
                 <span class="comment">// read of now to the set of the compare, the time can overflow. This is to</span>
                 <span class="comment">// guard against this.</span>
-                <span class="kw">if</span> <span class="ident">instant</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">Self</span>::<span class="ident">unwrapper</span>(<span class="ident">Clock</span>::<span class="ident">try_now</span>(<span class="ident">mono</span>)) {
+                <span class="kw">if</span> <span class="ident">instant</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">unwrapper</span>(<span class="ident">Clock</span>::<span class="ident">try_now</span>(<span class="ident">mono</span>)) {
                     <span class="kw">let</span> <span class="ident">nr</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="number">0</span>.<span class="ident">pop_unchecked</span>() };
 
                     <span class="prelude-val">Some</span>((<span class="ident">nr</span>.<span class="ident">task</span>, <span class="ident">nr</span>.<span class="ident">index</span>))
@@ -294,6 +353,7 @@
     <span class="kw">pub</span> <span class="ident">index</span>: <span class="ident">u8</span>,
     <span class="kw">pub</span> <span class="ident">instant</span>: <span class="ident">Instant</span><span class="op">&lt;</span><span class="ident">Mono</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">task</span>: <span class="ident">Task</span>,
+    <span class="kw">pub</span> <span class="ident">marker</span>: <span class="ident">u32</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span><span class="op">&gt;</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">NotReady</span><span class="op">&lt;</span><span class="ident">Mono</span>, <span class="ident">Task</span><span class="op">&gt;</span>
@@ -333,4 +393,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "rtic";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rtic"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
