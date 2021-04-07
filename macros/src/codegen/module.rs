@@ -21,7 +21,7 @@ pub fn codegen(
     let app_name = &app.name;
     let app_path = quote! {crate::#app_name};
 
-    let all_task_names: Vec<_> = app
+    let all_task_imports: Vec<_> = app
         .software_tasks
         .iter()
         .map(|(name, st)| {
@@ -44,6 +44,13 @@ pub fn codegen(
                 }
             } else {
                 quote!()
+            }
+        }))
+        .chain(app.user_types.iter().map(|ty| {
+            let t = &ty.ident;
+            quote! {
+                #[allow(unused_imports)]
+                use super::#t;
             }
         }))
         .collect();
@@ -230,7 +237,7 @@ pub fn codegen(
         // Spawn caller
         items.push(quote!(
 
-        #(#all_task_names)*
+        #(#all_task_imports)*
 
         #(#cfgs)*
         /// Spawns the task directly
@@ -300,10 +307,6 @@ pub fn codegen(
             items.push(quote!(
             /// Holds methods related to this monotonic
             pub mod #m {
-                // #(
-                //     #[allow(unused_imports)]
-                //     use #app_path::#all_task_names as #all_task_names;
-                // )*
                 use super::*;
                 #[allow(unused_imports)]
                 use #app_path::#tq_marker;

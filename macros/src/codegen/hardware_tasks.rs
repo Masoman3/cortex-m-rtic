@@ -37,6 +37,7 @@ pub fn codegen(
 
         let symbol = task.args.binds.clone();
         let priority = task.args.priority;
+        let cfgs = task.cfgs;
 
         let app_name = &app.name;
         let app_path = quote! {crate::#app_name};
