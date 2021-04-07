@@ -275,7 +275,7 @@ pub fn codegen(
             let tq = util::mark_internal_ident(&tq);
             let t = util::schedule_t_ident();
             let m = &monotonic.ident;
-            let mono_type = &monotonic.ty;
+            let mono_type = &monotonic.ident;
             let m_ident = util::monotonic_ident(&monotonic_name);
             let m_ident = util::mark_internal_ident(&m_ident);
             let m_isr = &monotonic.args.binds;
@@ -344,7 +344,7 @@ pub fn codegen(
                         where D: rtic::time::duration::Duration + rtic::time::fixed_point::FixedPoint,
                                  D::T: Into<<#app_path::#mono_type as rtic::time::Clock>::T>,
                     {
-                        self.reschedule_at(#app_path::#m::now() + duration)
+                        self.reschedule_at(#app_path::monotonics::#m::now() + duration)
                     }
 
                     pub fn reschedule_at(self, instant: rtic::time::Instant<#app_path::#mono_type>) -> Result<Self, ()>
@@ -376,7 +376,7 @@ pub fn codegen(
                     let instant = if rtic::export::interrupt::free(|_| unsafe { #app_path::#m_ident.is_none() }) {
                         rtic::time::Instant::new(0)
                     } else {
-                        #app_path::#m::now()
+                        #app_path::monotonics::#m::now()
                     };
 
                     spawn_at(instant + duration #(,#untupled)*)

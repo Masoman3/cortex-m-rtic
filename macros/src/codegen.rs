@@ -142,8 +142,6 @@ pub fn app(app: &App, analysis: &Analysis, extra: &Extra) -> TokenStream2 {
         .collect();
 
     let monotonics = if !monotonic_parts.is_empty() {
-        quote!()
-    } else {
         quote!(
             pub use rtic::Monotonic as _;
 
@@ -152,6 +150,8 @@ pub fn app(app: &App, analysis: &Analysis, extra: &Extra) -> TokenStream2 {
                 #(#monotonic_parts)*
             }
         )
+    } else {
+        quote!()
     };
     let rt_err = util::rt_err_ident();
 
